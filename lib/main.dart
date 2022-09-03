@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:videosdk_flutter_example/screens/Sign_In.dart';
 
 import 'constants/colors.dart';
 import 'navigator_key.dart';
@@ -24,7 +25,7 @@ class MyApp extends StatelessWidget {
         primaryColor: primaryColor,
         backgroundColor: secondaryColor,
       ),
-      home: const SplashScreen(),
+      home: const SignInDemo(), //SplashScreen(),
       navigatorKey: navigatorKey,
     );
   }
