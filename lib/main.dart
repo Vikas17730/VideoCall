@@ -24,7 +24,7 @@ class MyApp extends StatelessWidget {
         primaryColor: primaryColor,
         backgroundColor: secondaryColor,
       ),
-      //home: const SplashScreen(),
+      home: const SplashScreen(),
       navigatorKey: navigatorKey,
     );
   }
