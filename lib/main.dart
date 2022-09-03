@@ -17,6 +17,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     // Material App
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'VideoSDK Flutter Example',
       theme: ThemeData.dark().copyWith(
         appBarTheme: const AppBarTheme().copyWith(
