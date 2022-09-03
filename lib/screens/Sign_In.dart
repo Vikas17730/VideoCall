@@ -1,11 +1,10 @@
-
-
 import 'dart:async';
 import 'dart:convert' show json;
 
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http/http.dart' as http;
+import 'package:videosdk_flutter_example/screens/splash_screen.dart';
 
 GoogleSignIn _googleSignIn = GoogleSignIn(
   // Optional clientId
@@ -15,8 +14,6 @@ GoogleSignIn _googleSignIn = GoogleSignIn(
     'https://www.googleapis.com/auth/contacts.readonly',
   ],
 );
-
-
 
 class SignInDemo extends StatefulWidget {
   const SignInDemo({Key? key}) : super(key: key);
@@ -103,27 +100,8 @@ class SignInDemoState extends State<SignInDemo> {
   Widget _buildBody() {
     final GoogleSignInAccount? user = _currentUser;
     if (user != null) {
-      return Column(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: <Widget>[
-          ListTile(
-            leading: GoogleUserCircleAvatar(
-              identity: user,
-            ),
-            title: Text(user.displayName ?? ''),
-            subtitle: Text(user.email),
-          ),
-          const Text('Signed in successfully.'),
-          Text(_contactText),
-          ElevatedButton(
-            onPressed: _handleSignOut,
-            child: const Text('SIGN OUT'),
-          ),
-          ElevatedButton(
-            child: const Text('REFRESH'),
-            onPressed: () => _handleGetContact(user),
-          ),
-        ],
+      return SplashScreen(
+        ImageUrl: user.photoUrl!,
       );
     } else {
       return Column(
@@ -151,3 +129,25 @@ class SignInDemoState extends State<SignInDemo> {
         ));
   }
 }
+// Column(
+//         mainAxisAlignment: MainAxisAlignment.spaceAround,
+//         children: <Widget>[
+//           ListTile(
+//             leading: GoogleUserCircleAvatar(
+//               identity: user,
+//             ),
+//             title: Text(user.displayName ?? ''),
+//             subtitle: Text(user.email),
+//           ),
+//           const Text('Signed in successfully.'),
+//           Text(_contactText),
+//           ElevatedButton(
+//             onPressed: _handleSignOut,
+//             child: const Text('SIGN OUT'),
+//           ),
+//           ElevatedButton(
+//             child: const Text('REFRESH'),
+//             onPressed: () => _handleGetContact(user),
+//           ),
+//         ],
+//       )

@@ -2,9 +2,11 @@
 
 import 'dart:convert';
 import 'dart:developer';
+import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http/http.dart' as http;
 
 import '../constants/colors.dart';
@@ -15,8 +17,8 @@ import 'meeting_screen.dart';
 
 // Startup Screen
 class StartupScreen extends StatefulWidget {
-  const StartupScreen({Key? key}) : super(key: key);
-
+  StartupScreen({required this.user, Key? key}) : super(key: key);
+  final String user;
   @override
   State<StartupScreen> createState() => _StartupScreenState();
 }
@@ -39,6 +41,7 @@ class _StartupScreenState extends State<StartupScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       final token = await fetchToken();
       setState(() => _token = token);
+      log(widget.user);
     });
   }
 
@@ -54,6 +57,21 @@ class _StartupScreenState extends State<StartupScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text("VideoSDK RTC"),
+        actions: [
+          if (widget.user.length != 0)
+            CircleAvatar(
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(20),
+                child: Image.network(
+                  widget.user,
+                  fit: BoxFit.cover,
+                ),
+              ),
+            ),
+          const SizedBox(
+            width: 10,
+          ),
+        ],
       ),
       backgroundColor: secondaryColor,
       body: SafeArea(

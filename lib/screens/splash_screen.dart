@@ -1,10 +1,11 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'startup_screen.dart';
 
 class SplashScreen extends StatefulWidget {
-  const SplashScreen({Key? key}) : super(key: key);
-
+  const SplashScreen({required this.ImageUrl,Key? key}) : super(key: key);
+  final String ImageUrl;
   @override
   State<SplashScreen> createState() => _SplashScreenState();
 }
@@ -18,7 +19,7 @@ class _SplashScreenState extends State<SplashScreen> {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-          builder: (context) => const StartupScreen(),
+          builder: (context) => StartupScreen(user: widget.ImageUrl),
         ),
       );
     });

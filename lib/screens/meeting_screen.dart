@@ -336,7 +336,10 @@ class _MeetingScreenState extends State<MeetingScreen> {
       }
       Navigator.pushAndRemoveUntil(
           context,
-          MaterialPageRoute(builder: (context) => const StartupScreen()),
+          MaterialPageRoute(
+              builder: (context) => StartupScreen(
+                    user: "",
+                  )),
           (route) => false);
     });
 
