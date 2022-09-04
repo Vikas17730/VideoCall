@@ -4,16 +4,9 @@ import 'dart:convert' show json;
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
+import 'package:videosdk_flutter_example/providers/auth_provider.dart';
 import 'package:videosdk_flutter_example/screens/splash_screen.dart';
-
-GoogleSignIn _googleSignIn = GoogleSignIn(
-  // Optional clientId
-  // clientId: '479882132969-9i9aqik3jfjd7qhci1nqf0bm2g71rm1u.apps.googleusercontent.com',
-  scopes: <String>[
-    'email',
-    'https://www.googleapis.com/auth/contacts.readonly',
-  ],
-);
 
 class SignInDemo extends StatefulWidget {
   const SignInDemo({Key? key}) : super(key: key);
@@ -29,15 +22,23 @@ class SignInDemoState extends State<SignInDemo> {
   @override
   void initState() {
     super.initState();
-    _googleSignIn.onCurrentUserChanged.listen((GoogleSignInAccount? account) {
-      setState(() {
-        _currentUser = account;
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      Provider.of<AuthProvider>(context, listen: false)
+          .googleSignIn
+          .onCurrentUserChanged
+          .listen((GoogleSignInAccount? account) {
+        setState(() {
+          _currentUser = account;
+        });
+        if (_currentUser != null) {
+          _handleGetContact(_currentUser!);
+          Provider.of<AuthProvider>(context, listen: false).setLoggedIn();
+        }
       });
-      if (_currentUser != null) {
-        _handleGetContact(_currentUser!);
-      }
+      Provider.of<AuthProvider>(context, listen: false)
+          .googleSignIn
+          .signInSilently();
     });
-    _googleSignIn.signInSilently();
   }
 
   Future<void> _handleGetContact(GoogleSignInAccount user) async {
@@ -87,15 +88,10 @@ class SignInDemoState extends State<SignInDemo> {
     return null;
   }
 
-  Future<void> _handleSignIn() async {
-    try {
-      await _googleSignIn.signIn();
-    } catch (error) {
-      print(error);
-    }
-  }
-
-  Future<void> _handleSignOut() => _googleSignIn.disconnect();
+  Future<void> _handleSignOut() =>
+      Provider.of<AuthProvider>(context, listen: false)
+          .googleSignIn
+          .disconnect();
 
   Widget _buildBody() {
     final GoogleSignInAccount? user = _currentUser;
@@ -109,7 +105,8 @@ class SignInDemoState extends State<SignInDemo> {
         children: <Widget>[
           const Text('You are not currently signed in.'),
           ElevatedButton(
-            onPressed: _handleSignIn,
+            onPressed:
+                Provider.of<AuthProvider>(context, listen: false).handleSignIn,
             child: const Text('SIGN IN'),
           ),
         ],

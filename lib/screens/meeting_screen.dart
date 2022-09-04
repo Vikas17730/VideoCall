@@ -3,7 +3,9 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:videosdk/videosdk.dart';
+import 'package:videosdk_flutter_example/firebase_dynamic_link.dart';
 import '/screens/chat_screen.dart';
 
 import '../../navigator_key.dart';
@@ -269,10 +271,14 @@ class _MeetingScreenState extends State<MeetingScreen> {
 
                   // Copy meeting id button
                   IconButton(
-                    icon: const Icon(Icons.copy),
-                    onPressed: () {
-                      Clipboard.setData(ClipboardData(text: widget.meetingId));
-                      toastMsg("Meeting ID has been copied.");
+                    icon: const Icon(Icons.share),
+                    onPressed: () async {
+                      // Clipboard.setData(ClipboardData(text: widget.meetingId));
+                      // toastMsg("Meeting ID has been copied.");
+                      String url =
+                          await FirebaseDynamicLinkService.createDynamicLink(
+                              false, widget.meetingId);
+                      Share.share(url);
                     },
                   ),
                 ],

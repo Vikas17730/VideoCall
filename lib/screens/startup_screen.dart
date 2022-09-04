@@ -8,6 +8,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
+import 'package:videosdk_flutter_example/providers/auth_provider.dart';
+import 'package:videosdk_flutter_example/providers/join_meeting_provider.dart';
 
 import '../constants/colors.dart';
 import '../utils/spacer.dart';
@@ -39,7 +42,8 @@ class _StartupScreenState extends State<StartupScreen> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      final token = await fetchToken();
+      final token =
+          await Provider.of<AuthProvider>(context, listen: false).fetchToken();
       setState(() => _token = token);
       log(widget.user);
     });
@@ -132,38 +136,6 @@ class _StartupScreenState extends State<StartupScreen> {
     );
   }
 
-  Future<String> fetchToken() async {
-    if (!dotenv.isInitialized) {
-      // Load Environment variables
-      await dotenv.load(fileName: ".env");
-    }
-    final String? _AUTH_URL = dotenv.env['AUTH_URL'];
-    String? _AUTH_TOKEN = dotenv.env['AUTH_TOKEN'];
-
-    if ((_AUTH_TOKEN?.isEmpty ?? true) && (_AUTH_URL?.isEmpty ?? true)) {
-      toastMsg("Please set the environment variables");
-      throw Exception("Either AUTH_TOKEN or AUTH_URL is not set in .env file");
-      return "";
-    }
-
-    if ((_AUTH_TOKEN?.isNotEmpty ?? false) &&
-        (_AUTH_URL?.isNotEmpty ?? false)) {
-      toastMsg("Please set only one environment variable");
-      throw Exception("Either AUTH_TOKEN or AUTH_URL can be set in .env file");
-      return "";
-    }
-
-    if (_AUTH_URL?.isNotEmpty ?? false) {
-      final Uri getTokenUrl = Uri.parse('$_AUTH_URL/get-token');
-      final http.Response tokenResponse = await http.get(getTokenUrl);
-      _AUTH_TOKEN = json.decode(tokenResponse.body)['token'];
-    }
-
-    // log("Auth Token: $_AUTH_TOKEN");
-
-    return _AUTH_TOKEN ?? "";
-  }
-
   Future<void> onCreateMeetingButtonPressed() async {
     final String? _VIDEOSDK_API_ENDPOINT = dotenv.env['VIDEOSDK_API_ENDPOINT'];
 
@@ -190,21 +162,11 @@ class _StartupScreenState extends State<StartupScreen> {
   }
 
   Future<void> onJoinMeetingButtonPressed() async {
-    if (_meetingID.isEmpty) {
-      toastMsg("Please, Enter Valid Meeting ID");
-      return;
-    }
-
-    final String? _VIDEOSDK_API_ENDPOINT = dotenv.env['VIDEOSDK_API_ENDPOINT'];
-
-    final Uri validateMeetingUrl =
-        Uri.parse('$_VIDEOSDK_API_ENDPOINT/meetings/$_meetingID');
-    final http.Response validateMeetingResponse =
-        await http.post(validateMeetingUrl, headers: {
-      "Authorization": _token,
-    });
-
-    if (validateMeetingResponse.statusCode == 200) {
+    await Provider.of<JoinMeetingProvider>(context, listen: false)
+        .onJoinMeetingButtonPressed(_meetingID, _token);
+   http.Response meetingResponse =  Provider.of<JoinMeetingProvider>(context, listen: false)
+        .validateMeetingResponse;
+    if (meetingResponse.statusCode == 200) {
       Navigator.push(
         context,
         MaterialPageRoute(
